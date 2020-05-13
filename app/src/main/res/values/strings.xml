@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Giserap</string>
+    <string name="github_user_app">Github User App</string>
+    <string name="username">Username</string>
+    <string name="repository">Repository</string>
+    <string name="follower">Follower</string>
+    <string name="following">Following</string>
+    <string name="back">Back</string>
+    <string name="search_username">Search Username</string>
+    <string name="hasil_pencarian">Search Result :</string>
+
+</resources>
