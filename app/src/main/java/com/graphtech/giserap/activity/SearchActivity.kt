@@ -30,6 +30,10 @@ class SearchActivity : AppCompatActivity(), SearchUsernameView {
         // setupActionBar
         setupActionBar()
 
+        intentMainActivity.setOnClickListener {
+            finish()
+        }
+
         // setquery searchView
         val getQuery = intent.getStringExtra("query")
 
@@ -56,18 +60,10 @@ class SearchActivity : AppCompatActivity(), SearchUsernameView {
 
     private fun setupActionBar() {
         val actionBar = supportActionBar
-        actionBar?.setDisplayHomeAsUpEnabled(true)
+        actionBar?.hide()
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            android.R.id.home -> {
-                finish()
-                return true
-            }
-        }
-        return super.onOptionsItemSelected(item)
-    }
+
 
     override fun onShowLoading() {
         shimmerSearchUser.visibility = View.VISIBLE
