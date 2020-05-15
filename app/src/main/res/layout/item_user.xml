@@ -1,69 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="horizontal"
     android:layout_width="match_parent"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp"
     android:layout_height="150dp">
+
     <androidx.cardview.widget.CardView
         android:id="@+id/intentDetail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:clickable="true"
         android:foreground="?android:attr/selectableItemBackgroundBorderless"
         app:cardCornerRadius="10dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginBottom="16dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
             <ImageView
                 android:id="@+id/imgItemBackground"
-                tools:src="@drawable/user1"
-                android:scaleType="centerCrop"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
-            <ImageView
-                android:src="@drawable/bg_gradient_home"
-                android:alpha="0.8"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
-            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="horizontal"
+                android:scaleType="centerCrop"
+                tools:src="@drawable/user1" />
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:alpha="0.8"
+                android:src="@drawable/bg_gradient_home" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:padding="16dp">
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/imgItemUser"
-                    tools:src="@drawable/user1"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginRight="16dp"
                     android:layout_width="96dp"
-                    android:layout_height="match_parent"/>
-                <LinearLayout
-                    android:layout_gravity="center"
-                    android:orientation="vertical"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-                    <TextView
-                        android:id="@+id/tvItemName"
-                        tools:text="Jake Wharton"
-                        android:textSize="20sp"
-                        android:fontFamily="@font/poppins_semi_bold"
-                        android:textColor="@color/colorWhite"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"/>
-                    <TextView
-                        android:id="@+id/tvItemCompany"
-                        tools:text="Google Inc"
-                        android:textSize="15sp"
-                        android:fontFamily="@font/poppins_light"
-                        android:textColor="@color/colorWhite"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"/>
-                </LinearLayout>
-            </LinearLayout>
+                    android:layout_height="match_parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/tvItemName"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:src="@drawable/user1" />
+
+                <TextView
+                    android:id="@+id/tvItemName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:fontFamily="@font/poppins_semi_bold"
+                    android:textColor="@color/colorWhite"
+                    android:textSize="20sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/imgItemUser"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="Jake Wharton" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
         </RelativeLayout>
     </androidx.cardview.widget.CardView>
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -29,7 +29,6 @@ class ListUserAdapter(val context: Context, val listUser: ArrayList<User>) : Rec
         val user = listUser[position]
 
         holder.tvName.text = user.name
-        holder.tvCompany.text = user.company
         Glide.with(holder.itemView.context)
             .load(user.avatar)
             .into(holder.imgUser)
@@ -48,7 +47,6 @@ class ListUserAdapter(val context: Context, val listUser: ArrayList<User>) : Rec
 
     inner class ListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var tvName = itemView.tvItemName
-        var tvCompany = itemView.tvItemCompany
         var imgUser = itemView.imgItemUser
         var imgBackground = itemView.imgItemBackground
         var cardIntent = itemView.intentDetail

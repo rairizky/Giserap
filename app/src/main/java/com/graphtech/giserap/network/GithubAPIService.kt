@@ -23,10 +23,10 @@ interface GithubAPIService {
     @GET("users/{username}/followers")
     fun getUserFollower(
         @Path("username") username : String
-    ) : Call<FollowResponse>
+    ) : Call<List<FollowResponse>>
 
     @GET("users/{username}/following")
     fun getUserFollowing(
         @Path("username") username: String
-    ) : Call<FollowResponse>
+    ) : Call<List<FollowResponse>>
 }

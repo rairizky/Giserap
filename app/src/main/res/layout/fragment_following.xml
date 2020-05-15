@@ -1,15 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".fragment.FollowingFragment">
-
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:id="@+id/tvFollowing"
+    <com.facebook.shimmer.ShimmerFrameLayout
+        android:id="@+id/shimmerFollowing"
+        android:visibility="gone"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:text="rairizky" />
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <include layout="@layout/placeholder_item_search_user"/>
+            <include layout="@layout/placeholder_item_search_user"/>
+        </LinearLayout>
+    </com.facebook.shimmer.ShimmerFrameLayout>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvFollowing"
+        tools:listitem="@layout/item_user"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 
-</FrameLayout>
+</LinearLayout>
