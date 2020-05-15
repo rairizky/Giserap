@@ -8,6 +8,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.SimpleTarget
 import com.bumptech.glide.request.transition.Transition
 import com.graphtech.giserap.R
+import com.graphtech.giserap.adapter.DetailPagerAdapter
 import com.graphtech.giserap.model.DetailUserResponse
 import com.graphtech.giserap.model.User
 import com.graphtech.giserap.presenter.DetailUsernamePresenter
@@ -34,6 +35,9 @@ class DetailUserActivity : AppCompatActivity(), DetailUsernameView {
         // setup actionbar
         setupNavigation()
 
+        // setup actionBar
+        setupActionBar(user.username)
+
         // back button
         intentMainActivity.setOnClickListener {
             super.onBackPressed()
@@ -46,6 +50,12 @@ class DetailUserActivity : AppCompatActivity(), DetailUsernameView {
         actionBar?.hide()
     }
 
+    private fun setupActionBar(username: String) {
+        val detailPagerAdapter = DetailPagerAdapter(this, supportFragmentManager, username)
+        vpDetail.adapter = detailPagerAdapter
+        tlDetail.setupWithViewPager(vpDetail)
+    }
+
     override fun onShowLoading() {
         shimmerDetailLocation.visibility = View.VISIBLE
         shimmerDetailName.visibility = View.VISIBLE
@@ -54,6 +64,7 @@ class DetailUserActivity : AppCompatActivity(), DetailUsernameView {
         shimmerDetailName.startShimmer()
         shimmerDetailUsername.startShimmer()
         gridMenuSocial.visibility = View.GONE
+        linearLocation.visibility = View.GONE
     }
 
     override fun onHideLoading() {
@@ -64,6 +75,7 @@ class DetailUserActivity : AppCompatActivity(), DetailUsernameView {
         shimmerDetailName.stopShimmer()
         shimmerDetailUsername.stopShimmer()
         gridMenuSocial.visibility = View.VISIBLE
+        linearLocation.visibility = View.VISIBLE
     }
 
     override fun onSuccessGetDetailUsername(response: DetailUserResponse?) {

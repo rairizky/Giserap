@@ -13,6 +13,7 @@ import com.bumptech.glide.request.target.SimpleTarget
 import com.bumptech.glide.request.target.Target
 import com.bumptech.glide.request.transition.Transition
 import com.graphtech.giserap.R
+import com.graphtech.giserap.adapter.DetailPagerAdapter
 import com.graphtech.giserap.model.DetailUserResponse
 import com.graphtech.giserap.presenter.DetailUsernamePresenter
 import com.graphtech.giserap.view.DetailUsernameView
@@ -29,16 +30,20 @@ class SearchDetailUserActivity : AppCompatActivity(), DetailUsernameView {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search_detail_user)
 
-        // setup actionBar
-        setupActionBar()
-        
         // getString
         val username = intent.getStringExtra("username") as String
+
+        // setup actionBar
+        setupActionBar()
+
+        // setup viewPager
+        setupViewPager(username)
 
         // declare presenter
         detailUsernamePresenter = DetailUsernamePresenter(this)
         detailUsernamePresenter.getDetailUsername(username)
 
+        // back button
         intentSearchActivity.setOnClickListener {
             finish()
         }
@@ -49,6 +54,12 @@ class SearchDetailUserActivity : AppCompatActivity(), DetailUsernameView {
         actionBar?.hide()
     }
 
+    private fun setupViewPager(username: String) {
+        val detailPagerAdapter = DetailPagerAdapter(this, supportFragmentManager, username)
+        vpSearchDetail.adapter = detailPagerAdapter
+        tlSearchDetail.setupWithViewPager(vpSearchDetail)
+    }
+
     override fun onShowLoading() {
         shimmerDetailLocation.visibility = View.VISIBLE
         shimmerDetailName.visibility = View.VISIBLE
@@ -57,6 +68,7 @@ class SearchDetailUserActivity : AppCompatActivity(), DetailUsernameView {
         shimmerDetailName.startShimmer()
         shimmerDetailUsername.startShimmer()
         gridMenuSocial.visibility = View.GONE
+        linearLocation.visibility = View.GONE
     }
 
     override fun onHideLoading() {
@@ -67,6 +79,7 @@ class SearchDetailUserActivity : AppCompatActivity(), DetailUsernameView {
         shimmerDetailName.stopShimmer()
         shimmerDetailUsername.stopShimmer()
         gridMenuSocial.visibility = View.VISIBLE
+        linearLocation.visibility = View.VISIBLE
     }
 
     override fun onSuccessGetDetailUsername(response: DetailUserResponse?) {
