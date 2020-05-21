@@ -6,6 +6,7 @@ import com.graphtech.giserap.model.FollowResponse
 import com.graphtech.giserap.model.SearchResponse
 import retrofit2.Call
 import retrofit2.http.GET
+import retrofit2.http.Headers
 import retrofit2.http.Path
 import retrofit2.http.Query
 

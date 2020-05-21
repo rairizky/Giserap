@@ -1,5 +1,6 @@
 package com.graphtech.giserap.activity
 
+import android.database.sqlite.SQLiteConstraintException
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.os.Bundle
@@ -14,10 +15,16 @@ import com.bumptech.glide.request.target.Target
 import com.bumptech.glide.request.transition.Transition
 import com.graphtech.giserap.R
 import com.graphtech.giserap.adapter.DetailPagerAdapter
+import com.graphtech.giserap.helper.database
 import com.graphtech.giserap.model.DetailUserResponse
+import com.graphtech.giserap.model.Favorite
 import com.graphtech.giserap.presenter.DetailUsernamePresenter
 import com.graphtech.giserap.view.DetailUsernameView
 import kotlinx.android.synthetic.main.activity_search_detail_user.*
+import org.jetbrains.anko.db.classParser
+import org.jetbrains.anko.db.delete
+import org.jetbrains.anko.db.insert
+import org.jetbrains.anko.db.select
 import org.jetbrains.anko.toast
 import java.io.Reader
 
@@ -25,6 +32,7 @@ import java.io.Reader
 class SearchDetailUserActivity : AppCompatActivity(), DetailUsernameView {
 
     private lateinit var detailUsernamePresenter: DetailUsernamePresenter
+    private var isFavorite: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,6 +46,10 @@ class SearchDetailUserActivity : AppCompatActivity(), DetailUsernameView {
 
         // setup viewPager
         setupViewPager(username)
+
+        // check fav button
+        favoriteState(username)
+        setFavorite()
 
         // declare presenter
         detailUsernamePresenter = DetailUsernamePresenter(this)
@@ -93,9 +105,62 @@ class SearchDetailUserActivity : AppCompatActivity(), DetailUsernameView {
         tvDetailUserSearchRepo.text = response?.publicRepos.toString()
         tvDetailUserSearchFollower.text = response?.followers.toString()
         tvDetailUserSearchFollowing.text = response?.following.toString()
+
+        btnFavoriteSearchUser.setOnClickListener {
+            if (isFavorite) {
+                removeFromFavorite("${response?.login}")
+            }else {
+                addToFavorite("${response?.login}", "${response?.avatarUrl}")
+            }
+            isFavorite = !isFavorite
+            setFavorite()
+        }
     }
 
     override fun onErrorGetDetailUsername(message: String) {
         toast(message)
+    }
+
+    private fun favoriteState(id: String) {
+        database.use {
+            val result = select(Favorite.TABLE_FAVORITE)
+                .whereArgs("(USER_ID = {id})",
+                    "id" to id)
+            val favorite = result.parseList(classParser<Favorite>())
+            if (!favorite.isEmpty()) isFavorite = true
+        }
+    }
+
+    private fun setFavorite() {
+        if (isFavorite)
+            btnFavoriteSearchUser.setImageResource(R.drawable.ic_added_favorite)
+        else
+            btnFavoriteSearchUser.setImageResource(R.drawable.ic_add_favorite)
+    }
+
+    private fun addToFavorite(username: String, avatar: String) {
+        try {
+            database.use {
+                insert(
+                    Favorite.TABLE_FAVORITE,
+                    Favorite.USER_ID to username,
+                    Favorite.USER_AVATAR to avatar)
+            }
+            toast("Added to favorite")
+        } catch (e: SQLiteConstraintException) {
+            toast(e.localizedMessage)
+        }
+    }
+
+    private fun removeFromFavorite(username: String) {
+        try {
+            database.use {
+                delete(Favorite.TABLE_FAVORITE, "(USER_ID = {id})",
+                    "id" to username)
+            }
+            toast("Removed from favorite")
+        } catch (e: SQLiteConstraintException) {
+            toast(e.localizedMessage)
+        }
     }
 }

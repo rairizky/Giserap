@@ -1,6 +1,9 @@
 package com.graphtech.giserap.network
 
+import com.graphtech.giserap.BuildConfig
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
+import okhttp3.Response
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -17,7 +20,7 @@ object NetworkConfig {
 
     fun getRetrofit() : Retrofit {
         return Retrofit.Builder()
-            .baseUrl("https://api.github.com/")
+            .baseUrl(BuildConfig.BASE_URL)
             .client(getInterceptor())
             .addConverterFactory(GsonConverterFactory.create())
             .build()

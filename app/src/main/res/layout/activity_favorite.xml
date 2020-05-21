@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".activity.SearchActivity">
+    tools:context=".activity.FavoriteActivity">
     <LinearLayout
         android:id="@+id/intentMainActivity"
         android:layout_marginTop="16dp"
@@ -31,55 +31,23 @@
             android:layout_height="wrap_content"/>
     </LinearLayout>
     <LinearLayout
-        android:padding="16dp"
+        android:paddingTop="16dp"
+        android:paddingEnd="16dp"
+        android:paddingLeft="16dp"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <TextView
-            android:text="@string/hasil_pencarian"
+            android:text="@string/list_favorite"
             android:textSize="16sp"
             android:textColor="@color/colorPrimaryDark"
             android:fontFamily="@font/poppins_regular"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
-        <SearchView
-            android:id="@+id/svSearchResult"
-            android:focusable="false"
-            android:background="@drawable/background_border_rectangle"
-            android:iconifiedByDefault="false"
-            android:queryBackground="@null"
-            android:queryHint="Search Username Github..."
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
     </LinearLayout>
-    <com.facebook.shimmer.ShimmerFrameLayout
-        android:id="@+id/shimmerSearchUser"
-        android:visibility="gone"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-            <include layout="@layout/placeholder_item_search_user"/>
-            <include layout="@layout/placeholder_item_search_user"/>
-            <include layout="@layout/placeholder_item_search_user"/>
-        </LinearLayout>
-    </com.facebook.shimmer.ShimmerFrameLayout>
-    <TextView
-        android:id="@+id/tvNullData"
-        tools:text="Username 'xxxxxx' not found"
-        android:textAlignment="center"
-        android:fontFamily="@font/poppins_semi_bold"
-        android:textSize="24sp"
-        android:textColor="@color/colorPrimaryDark"
-        android:padding="16dp"
-        android:visibility="gone"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvSearchResult"
-        tools:listitem="@layout/item_search_user"
+        android:id="@+id/rvFavorite"
+        tools:listitem="@layout/item_user"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 </LinearLayout>

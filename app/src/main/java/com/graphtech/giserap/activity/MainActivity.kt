@@ -28,6 +28,11 @@ class MainActivity : AppCompatActivity() {
 
         // searchView
         searchViewAction()
+
+        // intent favorite
+        intentFavoriteActivity.setOnClickListener {
+            startActivity<FavoriteActivity>()
+        }
     }
 
     private fun setupNavigation() {

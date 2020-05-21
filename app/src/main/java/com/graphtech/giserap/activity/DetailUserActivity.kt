@@ -1,5 +1,6 @@
 package com.graphtech.giserap.activity
 
+import android.database.sqlite.SQLiteConstraintException
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.View
@@ -9,16 +10,25 @@ import com.bumptech.glide.request.target.SimpleTarget
 import com.bumptech.glide.request.transition.Transition
 import com.graphtech.giserap.R
 import com.graphtech.giserap.adapter.DetailPagerAdapter
+import com.graphtech.giserap.helper.database
 import com.graphtech.giserap.model.DetailUserResponse
+import com.graphtech.giserap.model.Favorite
 import com.graphtech.giserap.model.User
 import com.graphtech.giserap.presenter.DetailUsernamePresenter
 import com.graphtech.giserap.view.DetailUsernameView
 import kotlinx.android.synthetic.main.activity_detail_user.*
+import org.jetbrains.anko.db.classParser
+import org.jetbrains.anko.db.delete
+import org.jetbrains.anko.db.insert
+import org.jetbrains.anko.db.select
+import org.jetbrains.anko.toast
 
 
 class DetailUserActivity : AppCompatActivity(), DetailUsernameView {
 
     private lateinit var detailUsernamePresenter: DetailUsernamePresenter
+    private var isFavorite: Boolean = false
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,17 +36,21 @@ class DetailUserActivity : AppCompatActivity(), DetailUsernameView {
 
         // get bundle data from parcelable
         val bundle = intent.getBundleExtra("detail_user")
-        val user = bundle.getParcelable<User?>("user") as User
+        val user = bundle.getParcelable("user") as? User
+
+        // check fav button
+        favoriteState(user?.username.toString())
+        setFavorite()
 
         // declare
         detailUsernamePresenter = DetailUsernamePresenter(this)
-        detailUsernamePresenter.getDetailUsername(user.username)
+        detailUsernamePresenter.getDetailUsername(user?.username)
 
         // setup actionbar
         setupNavigation()
 
         // setup actionBar
-        setupActionBar(user.username)
+        setupActionBar(user?.username.toString())
 
         // back button
         intentMainActivity.setOnClickListener {
@@ -89,9 +103,61 @@ class DetailUserActivity : AppCompatActivity(), DetailUsernameView {
         tvDetailUserRepo.text = response?.publicRepos.toString()
         tvDetailUserFollower.text = response?.followers.toString()
         tvDetailUserFollowing.text = response?.following.toString()
+
+        btnFavoriteUser.setOnClickListener {
+            if (isFavorite) {
+                removeFromFavorite("${response?.login}")
+            }else {
+                addToFavorite("${response?.login}", "${response?.avatarUrl}")
+            }
+            isFavorite = !isFavorite
+            setFavorite()
+        }
     }
 
     override fun onErrorGetDetailUsername(message: String) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+
+    }
+
+    private fun favoriteState(id: String) {
+        database.use {
+            val result = select(Favorite.TABLE_FAVORITE)
+                .whereArgs("(USER_ID = {id})",
+                    "id" to id)
+            val favorite = result.parseList(classParser<Favorite>())
+            if (!favorite.isEmpty()) isFavorite = true
+        }
+    }
+
+    private fun setFavorite() {
+        if (isFavorite)
+            btnFavoriteUser.setImageResource(R.drawable.ic_added_favorite)
+        else
+            btnFavoriteUser.setImageResource(R.drawable.ic_add_favorite)
+    }
+
+    private fun addToFavorite(username: String, avatar: String) {
+        try {
+            database.use {
+                insert(Favorite.TABLE_FAVORITE,
+                    Favorite.USER_ID to username,
+                    Favorite.USER_AVATAR to avatar)
+            }
+            toast("Added to favorite")
+        } catch (e: SQLiteConstraintException) {
+            toast(e.localizedMessage)
+        }
+    }
+
+    private fun removeFromFavorite(username: String) {
+        try {
+            database.use {
+                delete(Favorite.TABLE_FAVORITE, "(USER_ID = {id})",
+                    "id" to username)
+            }
+            toast("Removed from favorite")
+        } catch (e: SQLiteConstraintException) {
+            toast(e.localizedMessage)
+        }
     }
 }

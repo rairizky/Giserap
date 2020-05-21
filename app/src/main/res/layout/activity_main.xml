@@ -1,19 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:orientation="vertical"
     android:layout_height="match_parent"
     tools:context=".activity.MainActivity">
     <LinearLayout
-        android:layout_marginTop="24dp"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:layout_marginBottom="16dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
+        <LinearLayout
+            android:id="@+id/intentFavoriteActivity"
+            android:clickable="true"
+            android:foreground="?android:attr/selectableItemBackgroundBorderless"
+            android:layout_marginTop="16dp"
+            android:layout_gravity="end"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <ImageView
+                android:src="@drawable/ic_added_favorite"
+                android:tint="@color/colorPrimaryDark"
+                android:layout_marginEnd="8dp"
+                android:layout_gravity="center"
+                android:layout_width="20dp"
+                android:layout_height="20dp"/>
+            <TextView
+                android:text="@string/favorite"
+                android:textSize="16sp"
+                android:fontFamily="@font/poppins_regular"
+                android:textColor="@color/colorPrimaryDark"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
         <TextView
             android:text="@string/app_name"
             android:fontFamily="@font/poppins_semi_bold"
@@ -35,6 +57,9 @@
             android:id="@+id/svUsers"
             android:queryHint="Search Username Github..."
             android:focusable="false"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/background_border_rectangle"
+            android:queryBackground="@null"
             android:iconifiedByDefault="false"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>

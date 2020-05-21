@@ -35,7 +35,7 @@ class DetailPagerAdapter(private val context: Context, fm: FragmentManager, priv
     }
 
     override fun getCount(): Int {
-        return 2
+        return TAB_TITLES.size
     }
 
 }
