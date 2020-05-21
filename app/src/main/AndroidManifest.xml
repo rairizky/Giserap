@@ -11,9 +11,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activity.FavoriteActivity"></activity>
-        <activity android:name=".activity.SearchDetailUserActivity"></activity>
-        <activity android:name=".activity.SearchActivity"></activity>
+        <activity android:name=".activity.SettingActivity"></activity>
+        <activity android:name=".activity.FavoriteActivity" />
+        <activity android:name=".activity.SearchDetailUserActivity" />
+        <activity android:name=".activity.SearchActivity" />
         <activity
             android:name=".activity.DetailUserActivity"
             android:screenOrientation="locked" />

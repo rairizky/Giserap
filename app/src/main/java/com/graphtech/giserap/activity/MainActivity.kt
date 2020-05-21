@@ -33,6 +33,11 @@ class MainActivity : AppCompatActivity() {
         intentFavoriteActivity.setOnClickListener {
             startActivity<FavoriteActivity>()
         }
+
+        // intent setting
+        intentSettingActivity.setOnClickListener {
+            startActivity<SettingActivity>()
+        }
     }
 
     private fun setupNavigation() {

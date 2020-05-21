@@ -7,8 +7,10 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.graphtech.giserap.R
+import com.graphtech.giserap.activity.SearchDetailUserActivity
 import com.graphtech.giserap.model.FollowResponse
 import kotlinx.android.synthetic.main.item_search_user.view.*
+import org.jetbrains.anko.startActivity
 
 class FollowAdapter(private val context: Context?, var data: List<FollowResponse?>?) : RecyclerView.Adapter<FollowAdapter.ViewHolder>() {
 
@@ -29,6 +31,10 @@ class FollowAdapter(private val context: Context?, var data: List<FollowResponse
         Glide.with(holder.itemView.context)
             .load(user?.avatarUrl)
             .into(holder.imgBackground)
+
+        holder.cardIntent.setOnClickListener {
+            holder.itemView.context.startActivity<SearchDetailUserActivity>("username" to user?.login.toString())
+        }
     }
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

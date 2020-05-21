@@ -81,6 +81,7 @@ class SearchDetailUserActivity : AppCompatActivity(), DetailUsernameView {
         shimmerDetailUsername.startShimmer()
         gridMenuSocial.visibility = View.GONE
         linearLocation.visibility = View.GONE
+        btnFavoriteSearchUser.hide()
     }
 
     override fun onHideLoading() {
@@ -92,6 +93,7 @@ class SearchDetailUserActivity : AppCompatActivity(), DetailUsernameView {
         shimmerDetailUsername.stopShimmer()
         gridMenuSocial.visibility = View.VISIBLE
         linearLocation.visibility = View.VISIBLE
+        btnFavoriteSearchUser.show()
     }
 
     override fun onSuccessGetDetailUsername(response: DetailUserResponse?) {
