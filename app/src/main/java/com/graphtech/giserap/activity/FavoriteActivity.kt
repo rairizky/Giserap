@@ -2,22 +2,24 @@ package com.graphtech.giserap.activity
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.graphtech.giserap.R
 import com.graphtech.giserap.adapter.FavoriteUserAdapter
-import com.graphtech.giserap.helper.database
-import com.graphtech.giserap.model.Favorite
+import com.graphtech.giserap.helper.FavoriteHelper
+import com.graphtech.giserap.helper.MappingHelper
 import kotlinx.android.synthetic.main.activity_favorite.*
-import kotlinx.coroutines.selects.select
-import org.jetbrains.anko.db.classParser
-import org.jetbrains.anko.db.select
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import okhttp3.Dispatcher
 import org.jetbrains.anko.toast
 
 class FavoriteActivity : AppCompatActivity() {
 
-    private var favorites: MutableList<Favorite> = mutableListOf()
-    private lateinit var favoriteAdapter: FavoriteUserAdapter
+    private lateinit var adapter: FavoriteUserAdapter
+    private lateinit var favoriteHelper: FavoriteHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,14 +32,22 @@ class FavoriteActivity : AppCompatActivity() {
         intentMainActivity.setOnClickListener {
             finish()
         }
+
+        // rv
         rvFavorite.layoutManager = LinearLayoutManager(this)
-        favoriteAdapter = FavoriteUserAdapter(favorites)
-        rvFavorite.adapter = favoriteAdapter
+        rvFavorite.setHasFixedSize(true)
+        adapter = FavoriteUserAdapter(this)
+        rvFavorite.adapter = adapter
+
     }
 
     override fun onResume() {
         super.onResume()
-        showFavorite()
+        favoriteHelper = FavoriteHelper.getInstance(applicationContext)
+        favoriteHelper.open()
+
+        // get data
+        loadFavoriteAsync()
     }
 
     private fun setupNavigation() {
@@ -45,13 +55,27 @@ class FavoriteActivity : AppCompatActivity() {
         actionBar?.hide()
     }
 
-    private fun showFavorite() {
-        favorites.clear()
-        database.use {
-            val result = select(Favorite.TABLE_FAVORITE)
-            val favorite = result.parseList(classParser<Favorite>())
-            favorites.addAll(favorite)
-            favoriteAdapter.notifyDataSetChanged()
+    private fun loadFavoriteAsync() {
+        GlobalScope.launch(Dispatchers.Main) {
+            // shimmer visible here
+            val deferredFavorite = async(Dispatchers.IO) {
+                val cursor = favoriteHelper.queryAll()
+                MappingHelper.mapCursorToArrayList(cursor)
+            }
+            // shimmer gone here
+            val favorites = deferredFavorite.await()
+            if (favorites.size > 0) {
+                adapter.listFavorite = favorites
+                adapter.notifyDataSetChanged()
+            } else {
+                adapter.listFavorite = ArrayList()
+                toast("No Favorite here")
+            }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        favoriteHelper.close()
     }
 }

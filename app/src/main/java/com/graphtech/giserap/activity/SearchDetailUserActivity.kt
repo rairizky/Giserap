@@ -1,37 +1,30 @@
 package com.graphtech.giserap.activity
 
-import android.database.sqlite.SQLiteConstraintException
-import android.graphics.Bitmap
-import android.graphics.drawable.Drawable
+import android.content.ContentValues
+import android.database.SQLException
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.request.RequestOptions
-import com.bumptech.glide.request.target.CustomTarget
-import com.bumptech.glide.request.target.SimpleTarget
-import com.bumptech.glide.request.target.Target
-import com.bumptech.glide.request.transition.Transition
 import com.graphtech.giserap.R
 import com.graphtech.giserap.adapter.DetailPagerAdapter
-import com.graphtech.giserap.helper.database
+import com.graphtech.giserap.helper.DatabaseContract
+import com.graphtech.giserap.helper.FavoriteHelper
 import com.graphtech.giserap.model.DetailUserResponse
 import com.graphtech.giserap.model.Favorite
 import com.graphtech.giserap.presenter.DetailUsernamePresenter
 import com.graphtech.giserap.view.DetailUsernameView
 import kotlinx.android.synthetic.main.activity_search_detail_user.*
 import org.jetbrains.anko.db.classParser
-import org.jetbrains.anko.db.delete
-import org.jetbrains.anko.db.insert
-import org.jetbrains.anko.db.select
+import org.jetbrains.anko.db.parseList
 import org.jetbrains.anko.toast
-import java.io.Reader
 
 
 class SearchDetailUserActivity : AppCompatActivity(), DetailUsernameView {
 
     private lateinit var detailUsernamePresenter: DetailUsernamePresenter
+    private lateinit var favoriteHelper: FavoriteHelper
+    private var favorite: Favorite? = null
     private var isFavorite: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,10 +37,15 @@ class SearchDetailUserActivity : AppCompatActivity(), DetailUsernameView {
         // setup actionBar
         setupActionBar()
 
+        // sqlite
+        favoriteHelper = FavoriteHelper.getInstance(applicationContext)
+        favoriteHelper.open()
+        favorite = Favorite()
+
         // setup viewPager
         setupViewPager(username)
 
-        // check fav button
+        // check isFavorite
         favoriteState(username)
         setFavorite()
 
@@ -110,9 +108,9 @@ class SearchDetailUserActivity : AppCompatActivity(), DetailUsernameView {
 
         btnFavoriteSearchUser.setOnClickListener {
             if (isFavorite) {
-                removeFromFavorite("${response?.login}")
-            }else {
-                addToFavorite("${response?.login}", "${response?.avatarUrl}")
+                removeFromFavorite(response?.login.toString())
+            } else {
+                addToFavorite(response?.login.toString(), response?.avatarUrl.toString())
             }
             isFavorite = !isFavorite
             setFavorite()
@@ -123,46 +121,37 @@ class SearchDetailUserActivity : AppCompatActivity(), DetailUsernameView {
         toast(message)
     }
 
-    private fun favoriteState(id: String) {
-        database.use {
-            val result = select(Favorite.TABLE_FAVORITE)
-                .whereArgs("(USER_ID = {id})",
-                    "id" to id)
-            val favorite = result.parseList(classParser<Favorite>())
-            if (!favorite.isEmpty()) isFavorite = true
-        }
+    private fun favoriteState(username: String) {
+        val check = favoriteHelper.queryById(username)
+        val result = check.parseList(classParser<Favorite>())
+        if (result.isNotEmpty()) isFavorite = true
     }
 
     private fun setFavorite() {
-        if (isFavorite)
+        if (isFavorite) {
             btnFavoriteSearchUser.setImageResource(R.drawable.ic_added_favorite)
-        else
+        } else {
             btnFavoriteSearchUser.setImageResource(R.drawable.ic_add_favorite)
+        }
     }
 
     private fun addToFavorite(username: String, avatar: String) {
-        try {
-            database.use {
-                insert(
-                    Favorite.TABLE_FAVORITE,
-                    Favorite.USER_ID to username,
-                    Favorite.USER_AVATAR to avatar)
-            }
+        val values = ContentValues()
+        values.put(DatabaseContract.FavoriteColumns.USERNAME, username)
+        values.put(DatabaseContract.FavoriteColumns.AVATAR, avatar)
+
+        val result = favoriteHelper.insert(values)
+        if (result > 0) {
             toast("Added to favorite")
-        } catch (e: SQLiteConstraintException) {
-            toast(e.localizedMessage)
+        } else {
+            toast("Can't add to favorite!")
         }
     }
 
     private fun removeFromFavorite(username: String) {
-        try {
-            database.use {
-                delete(Favorite.TABLE_FAVORITE, "(USER_ID = {id})",
-                    "id" to username)
-            }
+        val result = favoriteHelper.deleteById(username)
+        if (result > 0) {
             toast("Removed from favorite")
-        } catch (e: SQLiteConstraintException) {
-            toast(e.localizedMessage)
         }
     }
 }
