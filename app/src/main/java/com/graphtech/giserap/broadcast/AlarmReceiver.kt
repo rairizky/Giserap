@@ -55,7 +55,7 @@ class AlarmReceiver : BroadcastReceiver() {
 
         val pendingIntent = PendingIntent.getBroadcast(context, ID_REPEATING, intent, 0)
         alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, AlarmManager.INTERVAL_DAY, pendingIntent)
-        context.toast("Repeating Alarm on at 9 AM")
+        context.toast("Repeating Alarm at 9 AM")
     }
 
     fun cancelAlarm(context: Context, type: String) {

@@ -1,2 +1,3 @@
 rootProject.name='Giserap'
 include ':app'
+include ':consumerapp'

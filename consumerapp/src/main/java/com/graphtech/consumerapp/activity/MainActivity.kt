@@ -1,52 +1,41 @@
-package com.graphtech.giserap.activity
+package com.graphtech.consumerapp.activity
 
-import android.database.ContentObserver
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Handler
-import android.os.HandlerThread
-import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.graphtech.giserap.R
-import com.graphtech.giserap.adapter.FavoriteUserAdapter
-import com.graphtech.giserap.helper.DatabaseContract.FavoriteColumns.Companion.CONTENT_URI
-import com.graphtech.giserap.helper.FavoriteHelper
-import com.graphtech.giserap.helper.MappingHelper
-import kotlinx.android.synthetic.main.activity_favorite.*
+import com.graphtech.consumerapp.R
+import com.graphtech.consumerapp.adapter.FavoriteUserAdapter
+import com.graphtech.consumerapp.helper.DatabaseContract.FavoriteColumns.Companion.CONTENT_URI
+import com.graphtech.consumerapp.helper.MappingHelper
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
-import okhttp3.Dispatcher
 import org.jetbrains.anko.toast
 
-class FavoriteActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity() {
 
     private lateinit var adapter: FavoriteUserAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_favorite)
+        setContentView(R.layout.activity_main)
 
-        // setup action bar
+        // set up actionBar
         setupNavigation()
 
-        // back to main
-        intentMainActivity.setOnClickListener {
-            finish()
-        }
-
         adapter = FavoriteUserAdapter(this)
-    }
-
-    override fun onResume() {
-        super.onResume()
-        loadFavoriteAsync()
     }
 
     private fun setupNavigation() {
         val actionBar = supportActionBar
         actionBar?.hide()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        loadFavoriteAsync()
     }
 
     private fun loadFavoriteAsync() {
@@ -60,7 +49,7 @@ class FavoriteActivity : AppCompatActivity() {
             val favorites = deferredFavorite.await()
             if (favorites.size > 0) {
                 adapter.notifyDataSetChanged()
-                rvFavorite.layoutManager = LinearLayoutManager(this@FavoriteActivity)
+                rvFavorite.layoutManager = LinearLayoutManager(this@MainActivity)
                 rvFavorite.adapter = adapter
                 adapter.listFavorite = favorites
             } else {
@@ -69,5 +58,4 @@ class FavoriteActivity : AppCompatActivity() {
             }
         }
     }
-
 }
