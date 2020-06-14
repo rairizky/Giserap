@@ -2,6 +2,7 @@ package com.graphtech.giserap.activity
 
 import android.content.ContentValues
 import android.database.SQLException
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
@@ -9,7 +10,10 @@ import com.bumptech.glide.Glide
 import com.graphtech.giserap.R
 import com.graphtech.giserap.adapter.DetailPagerAdapter
 import com.graphtech.giserap.helper.DatabaseContract
+import com.graphtech.giserap.helper.DatabaseContract.FavoriteColumns.Companion.CONTENT_URI
+import com.graphtech.giserap.helper.DatabaseContract.FavoriteColumns.Companion.USERNAME
 import com.graphtech.giserap.helper.FavoriteHelper
+import com.graphtech.giserap.helper.MappingHelper
 import com.graphtech.giserap.model.DetailUserResponse
 import com.graphtech.giserap.model.Favorite
 import com.graphtech.giserap.presenter.DetailUsernamePresenter
@@ -23,7 +27,6 @@ import org.jetbrains.anko.toast
 class SearchDetailUserActivity : AppCompatActivity(), DetailUsernameView {
 
     private lateinit var detailUsernamePresenter: DetailUsernamePresenter
-    private lateinit var favoriteHelper: FavoriteHelper
     private var favorite: Favorite? = null
     private var isFavorite: Boolean = false
 
@@ -37,17 +40,8 @@ class SearchDetailUserActivity : AppCompatActivity(), DetailUsernameView {
         // setup actionBar
         setupActionBar()
 
-        // sqlite
-        favoriteHelper = FavoriteHelper.getInstance(applicationContext)
-        favoriteHelper.open()
-        favorite = Favorite()
-
         // setup viewPager
         setupViewPager(username)
-
-        // check isFavorite
-        favoriteState(username)
-        setFavorite()
 
         // declare presenter
         detailUsernamePresenter = DetailUsernamePresenter(this)
@@ -106,11 +100,14 @@ class SearchDetailUserActivity : AppCompatActivity(), DetailUsernameView {
         tvDetailUserSearchFollower.text = response?.followers.toString()
         tvDetailUserSearchFollowing.text = response?.following.toString()
 
+        isFavorite = favoriteState(response?.id?.toLong())
+        setFavorite()
+
         btnFavoriteSearchUser.setOnClickListener {
             if (isFavorite) {
-                removeFromFavorite(response?.login.toString())
+                removeFromFavorite(response?.id?.toLong())
             } else {
-                addToFavorite(response?.login.toString(), response?.avatarUrl.toString())
+                addToFavorite(response?.login.toString(), response?.avatarUrl.toString(), response?.id?.toLong())
             }
             isFavorite = !isFavorite
             setFavorite()
@@ -121,10 +118,15 @@ class SearchDetailUserActivity : AppCompatActivity(), DetailUsernameView {
         toast(message)
     }
 
-    private fun favoriteState(username: String) {
-        val check = favoriteHelper.queryById(username)
-        val result = check.parseList(classParser<Favorite>())
-        if (result.isNotEmpty()) isFavorite = true
+    private fun favoriteState(userId: Long?) : Boolean {
+       val uri = Uri.parse("$CONTENT_URI/$userId")
+        val cursor = contentResolver.query(uri, null, null, null, null)
+        if (cursor != null && cursor.count != 0) {
+            favorite = MappingHelper.mapCursorToObject(cursor)
+            cursor.close()
+            return true
+        }
+        return false
     }
 
     private fun setFavorite() {
@@ -135,23 +137,19 @@ class SearchDetailUserActivity : AppCompatActivity(), DetailUsernameView {
         }
     }
 
-    private fun addToFavorite(username: String, avatar: String) {
+    private fun addToFavorite(username: String, avatar: String, userId: Long?) {
         val values = ContentValues()
         values.put(DatabaseContract.FavoriteColumns.USERNAME, username)
         values.put(DatabaseContract.FavoriteColumns.AVATAR, avatar)
+        values.put(DatabaseContract.FavoriteColumns._ID, userId)
 
-        val result = favoriteHelper.insert(values)
-        if (result > 0) {
-            toast("Added to favorite")
-        } else {
-            toast("Can't add to favorite!")
-        }
+        contentResolver.insert(CONTENT_URI, values)
+        toast("Added to favorite")
     }
 
-    private fun removeFromFavorite(username: String) {
-        val result = favoriteHelper.deleteById(username)
-        if (result > 0) {
-            toast("Removed from favorite")
-        }
+    private fun removeFromFavorite(userId: Long?) {
+        val uriWithId = Uri.parse("$CONTENT_URI/$userId")
+        contentResolver.delete(uriWithId, null, null)
+        toast("Removed from favorite")
     }
 }

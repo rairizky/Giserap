@@ -1,11 +1,15 @@
 package com.graphtech.giserap.activity
 
+import android.database.ContentObserver
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
+import android.os.HandlerThread
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.graphtech.giserap.R
 import com.graphtech.giserap.adapter.FavoriteUserAdapter
+import com.graphtech.giserap.helper.DatabaseContract.FavoriteColumns.Companion.CONTENT_URI
 import com.graphtech.giserap.helper.FavoriteHelper
 import com.graphtech.giserap.helper.MappingHelper
 import kotlinx.android.synthetic.main.activity_favorite.*
@@ -34,19 +38,13 @@ class FavoriteActivity : AppCompatActivity() {
         }
 
         // rv
-        rvFavorite.layoutManager = LinearLayoutManager(this)
-        rvFavorite.setHasFixedSize(true)
+        //rvFavorite.layoutManager = LinearLayoutManager(applicationContext)
         adapter = FavoriteUserAdapter(this)
-        rvFavorite.adapter = adapter
-
+        //rvFavorite.adapter = adapter
     }
 
     override fun onResume() {
         super.onResume()
-        favoriteHelper = FavoriteHelper.getInstance(applicationContext)
-        favoriteHelper.open()
-
-        // get data
         loadFavoriteAsync()
     }
 
@@ -59,14 +57,16 @@ class FavoriteActivity : AppCompatActivity() {
         GlobalScope.launch(Dispatchers.Main) {
             // shimmer visible here
             val deferredFavorite = async(Dispatchers.IO) {
-                val cursor = favoriteHelper.queryAll()
+                val cursor = contentResolver?.query(CONTENT_URI, null, null, null, null)
                 MappingHelper.mapCursorToArrayList(cursor)
             }
             // shimmer gone here
             val favorites = deferredFavorite.await()
             if (favorites.size > 0) {
-                adapter.listFavorite = favorites
                 adapter.notifyDataSetChanged()
+                rvFavorite.layoutManager = LinearLayoutManager(this@FavoriteActivity)
+                rvFavorite.adapter = adapter
+                adapter.listFavorite = favorites
             } else {
                 adapter.listFavorite = ArrayList()
                 toast("No Favorite here")
@@ -74,8 +74,4 @@ class FavoriteActivity : AppCompatActivity() {
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        favoriteHelper.close()
-    }
 }

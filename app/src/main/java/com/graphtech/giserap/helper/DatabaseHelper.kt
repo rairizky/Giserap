@@ -4,7 +4,7 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import com.graphtech.giserap.helper.DatabaseContract.FavoriteColumns.Companion.TABLE_NAME
-import com.graphtech.giserap.helper.DatabaseContract.*
+import com.graphtech.giserap.helper.DatabaseContract.FavoriteColumns
 
 internal class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
