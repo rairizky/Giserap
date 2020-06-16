@@ -10,3 +10,5 @@ Technology :
 * Glide
 * GSON
 * Logging Interceptor
+
+![photo_2020-06-03 14 36 10](https://media.giphy.com/media/kaTeeCl54WhDNqoyEu/giphy.gif)
